@@ -36,16 +36,26 @@ app.post('/api/shorturl', (req, res) => {
   const dnsLookUp = dns.lookup(url.parse(req.body.url).hostname, async (err, address) => {
 
     if (!address) {
-      res.json({error: "Invalid URL"})
+      res.json({error: "Invalid URL"});
     } else {
 
+      const urlCount = await urls.countDocuments({});
+
+      const submittedUrl = req.body.url;
+
+      
       const urlObj = {
-        original_url: req.body.url,
-        short_url: 0
+        original_url: submittedUrl,
+        short_url: urlCount
       }
+
+      const result = await urls.insertOne(urlObj);
   
-      console.log(req.body);
-      res.json(urlObj);
+      console.log(result);
+      res.json({
+        original_url: submittedUrl,
+        short_url: urlCount
+      });
       
     }
     

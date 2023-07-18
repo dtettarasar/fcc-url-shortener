@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const dns = require('dns');
+const url = require('url');
 const app = express();
 const { MongoClient } = require('mongodb');
 
@@ -31,15 +33,24 @@ app.get('/api/hello', function(req, res) {
 
 app.post('/api/shorturl', (req, res) => {
 
-  
-  const urlObj = {
-    original_url: req.body.url,
-    short_url: 0
-  }
+  const dnsLookUp = dns.lookup(url.parse(req.body.url).hostname, async (err, address) => {
 
+    if (!address) {
+      res.json({error: "Invalid URL"})
+    } else {
+
+      const urlObj = {
+        original_url: req.body.url,
+        short_url: 0
+      }
   
-  console.log(req.body);
-  res.json(urlObj);
+      console.log(req.body);
+      res.json(urlObj);
+      
+    }
+    
+  });
+  
 });
 
 

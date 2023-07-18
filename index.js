@@ -36,13 +36,14 @@ app.post('/api/shorturl', (req, res) => {
   const dnsLookUp = dns.lookup(url.parse(req.body.url).hostname, async (err, address) => {
 
     if (!address) {
+      
       res.json({error: "Invalid URL"});
+      
     } else {
 
       const urlCount = await urls.countDocuments({});
 
       const submittedUrl = req.body.url;
-
       
       const urlObj = {
         original_url: submittedUrl,
@@ -52,6 +53,7 @@ app.post('/api/shorturl', (req, res) => {
       const result = await urls.insertOne(urlObj);
   
       console.log(result);
+      
       res.json({
         original_url: submittedUrl,
         short_url: urlCount
@@ -63,6 +65,14 @@ app.post('/api/shorturl', (req, res) => {
   
 });
 
+app.get("/api/shorturl/:short_url_code", async (req, res) => {
+  
+  const shortUrlCode = req.params.short_url_code;
+
+  const urlObj = await urls.findOne({short_url: +shortUrlCode});
+  res.redirect(urlObj.original_url);
+  
+});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);

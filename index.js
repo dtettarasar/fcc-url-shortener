@@ -30,8 +30,16 @@ app.get('/api/hello', function(req, res) {
 
 
 app.post('/api/shorturl', (req, res) => {
+
+  
+  const urlObj = {
+    original_url: req.body.url,
+    short_url: 0
+  }
+
+  
   console.log(req.body);
-  res.json({ greeting: 'hello API' });
+  res.json(urlObj);
 });
 
 
